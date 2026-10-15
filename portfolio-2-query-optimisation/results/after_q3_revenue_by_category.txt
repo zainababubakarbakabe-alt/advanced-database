@@ -1,0 +1,57 @@
+-- q3_revenue_by_category (after indexing)
+                                                                          QUERY PLAN                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ GroupAggregate  (cost=91009.54..103266.89 rows=490294 width=50) (actual time=865.759..1043.905 rows=100 loops=1)
+   Group Key: (date_trunc('month'::text, pay.paid_at)), parent.name
+   Buffers: shared hit=6564, temp read=4314 written=4324
+   ->  Sort  (cost=91009.54..92235.27 rows=490294 width=26) (actual time=864.479..940.615 rows=499782 loops=1)
+         Sort Key: (date_trunc('month'::text, pay.paid_at)), parent.name
+         Sort Method: external merge  Disk: 19744kB
+         Buffers: shared hit=6564, temp read=4314 written=4324
+         ->  Hash Join  (cost=8153.86..32936.70 rows=490294 width=26) (actual time=86.999..674.475 rows=499782 loops=1)
+               Hash Cond: (c.parent_id = parent.category_id)
+               Buffers: shared hit=6558, temp read=1846 written=1846
+               ->  Hash Join  (cost=8152.64..30095.44 rows=490294 width=20) (actual time=67.943..498.967 rows=499782 loops=1)
+                     Hash Cond: (p.category_id = c.category_id)
+                     Buffers: shared hit=6557, temp read=1846 written=1846
+                     ->  Hash Join  (cost=8151.41..28261.75 rows=490294 width=20) (actual time=67.885..417.862 rows=499782 loops=1)
+                           Hash Cond: (oi.product_id = p.product_id)
+                           Buffers: shared hit=6556, temp read=1846 written=1846
+                           ->  Hash Join  (cost=7494.41..26317.45 rows=490294 width=24) (actual time=62.836..308.624 rows=499782 loops=1)
+                                 Hash Cond: (oi.order_id = pay.order_id)
+                                 Buffers: shared hit=6349, temp read=1846 written=1846
+                                 ->  Seq Scan on order_item oi  (cost=0.00..10412.00 rows=600000 width=16) (actual time=0.019..62.654 rows=600000 loops=1)
+                                       Buffers: shared hit=4412
+                                 ->  Hash  (cost=4437.00..4437.00 rows=166513 width=24) (actual time=62.138..62.139 rows=166594 loops=1)
+                                       Buckets: 131072  Batches: 2  Memory Usage: 6228kB
+                                       Buffers: shared hit=1937, temp written=527
+                                       ->  Seq Scan on payment pay  (cost=0.00..4437.00 rows=166513 width=24) (actual time=0.014..24.551 rows=166594 loops=1)
+                                             Filter: ((status)::text = 'SUCCESS'::text)
+                                             Rows Removed by Filter: 33406
+                                             Buffers: shared hit=1937
+                           ->  Hash  (cost=407.00..407.00 rows=20000 width=12) (actual time=4.873..4.874 rows=20000 loops=1)
+                                 Buckets: 32768  Batches: 1  Memory Usage: 1116kB
+                                 Buffers: shared hit=207
+                                 ->  Seq Scan on product p  (cost=0.00..407.00 rows=20000 width=12) (actual time=0.008..1.881 rows=20000 loops=1)
+                                       Buffers: shared hit=207
+                     ->  Hash  (cost=1.10..1.10 rows=10 width=8) (actual time=0.045..0.045 rows=10 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           Buffers: shared hit=1
+                           ->  Seq Scan on category c  (cost=0.00..1.10 rows=10 width=8) (actual time=0.037..0.039 rows=10 loops=1)
+                                 Buffers: shared hit=1
+               ->  Hash  (cost=1.10..1.10 rows=10 width=14) (actual time=19.023..19.024 rows=10 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                     Buffers: shared hit=1
+                     ->  Seq Scan on category parent  (cost=0.00..1.10 rows=10 width=14) (actual time=18.993..18.997 rows=10 loops=1)
+                           Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=464
+ Planning Time: 1.630 ms
+ JIT:
+   Functions: 41
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+   Timing: Generation 1.222 ms, Inlining 0.000 ms, Optimization 3.066 ms, Emission 16.023 ms, Total 20.311 ms
+ Execution Time: 1062.264 ms
+(51 rows)
+
+-- median of 5 further runs: 959.476 ms

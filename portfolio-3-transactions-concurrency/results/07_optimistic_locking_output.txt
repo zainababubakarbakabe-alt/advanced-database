@@ -1,0 +1,18 @@
+SET
+ALTER TABLE
+UPDATE 1
+--- both editors load the product (each sees version 1)
+ product_id |  price   | version 
+------------+----------+---------
+        601 | 50000.00 |       1
+(1 row)
+
+--- editor A saves: UPDATE ... WHERE version = 1  -> 1 row, version becomes 2
+UPDATE 1
+--- editor B saves with the STALE version 1 -> 0 rows: the app must reload and tell the user
+UPDATE 0
+ product_id |  price   | version 
+------------+----------+---------
+        601 | 52000.00 |       2
+(1 row)
+

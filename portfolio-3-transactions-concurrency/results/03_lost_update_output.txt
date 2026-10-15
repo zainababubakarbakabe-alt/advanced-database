@@ -1,0 +1,21 @@
+=== B1. BROKEN pattern: read stock in app, then write back (read-modify-write)
+session B read stock = 1
+session A read stock = 1
+
+
+units sold (stock_log) = 2, stock now = 0
+-> 2 customers were told they bought the last unit: OVERSOLD (lost update).
+
+=== B2. FIX 1: pessimistic locking with SELECT ... FOR UPDATE
+session A got lock, stock = 1
+
+session A units sold: 1
+session B got lock, stock = 0
+
+session B units sold: 0
+final stock = 0
+
+=== B3. FIX 2: atomic conditional UPDATE + CHECK constraint (no explicit lock needed)
+session A units sold: 1
+session B units sold: 0
+final stock = 0

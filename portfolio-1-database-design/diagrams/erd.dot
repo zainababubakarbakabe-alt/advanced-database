@@ -1,0 +1,29 @@
+digraph ERD {
+  graph [rankdir=LR, fontname="Helvetica", pad=0.3, nodesep=0.35, ranksep=0.9, bgcolor=white];
+  node  [shape=plaintext, fontname="Helvetica", fontsize=10];
+  edge  [fontname="Helvetica", fontsize=9, color="#41607a", arrowhead=crow, arrowtail=tee, dir=both];
+
+  customer [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#0b3558"><FONT COLOR="white"><B>customer</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><B>PK</B> customer_id<BR ALIGN="LEFT"/>full_name<BR ALIGN="LEFT"/>email (UNIQUE)<BR ALIGN="LEFT"/>phone, created_at<BR ALIGN="LEFT"/></TD></TR></TABLE>>];
+  address  [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#0b3558"><FONT COLOR="white"><B>address</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><B>PK</B> address_id<BR ALIGN="LEFT"/><I>FK</I> customer_id<BR ALIGN="LEFT"/>street, city, state, is_default<BR ALIGN="LEFT"/></TD></TR></TABLE>>];
+  orders   [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#0b3558"><FONT COLOR="white"><B>orders</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><B>PK</B> order_id<BR ALIGN="LEFT"/><I>FK</I> customer_id<BR ALIGN="LEFT"/><I>FK</I> address_id<BR ALIGN="LEFT"/>status (CHECK), order_date<BR ALIGN="LEFT"/></TD></TR></TABLE>>];
+  order_item [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#0b3558"><FONT COLOR="white"><B>order_item</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><B>PK,FK</B> order_id<BR ALIGN="LEFT"/><B>PK,FK</B> product_id<BR ALIGN="LEFT"/>quantity (&gt;0), unit_price<BR ALIGN="LEFT"/></TD></TR></TABLE>>];
+  product  [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#0b3558"><FONT COLOR="white"><B>product</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><B>PK</B> product_id<BR ALIGN="LEFT"/><I>FK</I> seller_id<BR ALIGN="LEFT"/><I>FK</I> category_id<BR ALIGN="LEFT"/>name, price (&gt;0)<BR ALIGN="LEFT"/>stock_qty (&gt;=0)<BR ALIGN="LEFT"/></TD></TR></TABLE>>];
+  seller   [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#0b3558"><FONT COLOR="white"><B>seller</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><B>PK</B> seller_id<BR ALIGN="LEFT"/>business_name (UNIQUE)<BR ALIGN="LEFT"/>rating (0-5)<BR ALIGN="LEFT"/></TD></TR></TABLE>>];
+  category [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#0b3558"><FONT COLOR="white"><B>category</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><B>PK</B> category_id<BR ALIGN="LEFT"/>name (UNIQUE)<BR ALIGN="LEFT"/><I>FK</I> parent_id (self)<BR ALIGN="LEFT"/></TD></TR></TABLE>>];
+  payment  [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#0b3558"><FONT COLOR="white"><B>payment</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><B>PK</B> payment_id<BR ALIGN="LEFT"/><I>FK, UNIQUE</I> order_id<BR ALIGN="LEFT"/>method, amount, status<BR ALIGN="LEFT"/></TD></TR></TABLE>>];
+  delivery [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#0b3558"><FONT COLOR="white"><B>delivery</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><B>PK</B> delivery_id<BR ALIGN="LEFT"/><I>FK, UNIQUE</I> order_id<BR ALIGN="LEFT"/>courier, status<BR ALIGN="LEFT"/></TD></TR></TABLE>>];
+  review   [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="3"><TR><TD BGCOLOR="#0b3558"><FONT COLOR="white"><B>review</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><B>PK</B> review_id<BR ALIGN="LEFT"/><I>FK</I> product_id, customer_id<BR ALIGN="LEFT"/>UNIQUE(product_id, customer_id)<BR ALIGN="LEFT"/>rating 1-5, comment<BR ALIGN="LEFT"/></TD></TR></TABLE>>];
+
+  customer -> address [taillabel="1", headlabel="N"];
+  customer -> orders  [taillabel="1", headlabel="N"];
+  address  -> orders  [taillabel="1", headlabel="N"];
+  orders   -> order_item [taillabel="1", headlabel="N"];
+  product  -> order_item [taillabel="1", headlabel="N"];
+  seller   -> product [taillabel="1", headlabel="N"];
+  category -> product [taillabel="1", headlabel="N"];
+  category -> category [label="parent", taillabel="1", headlabel="N"];
+  orders   -> payment  [taillabel="1", headlabel="0..1"];
+  orders   -> delivery [taillabel="1", headlabel="0..1"];
+  product  -> review [taillabel="1", headlabel="N"];
+  customer -> review [taillabel="1", headlabel="N"];
+}

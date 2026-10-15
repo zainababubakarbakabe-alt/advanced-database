@@ -1,0 +1,34 @@
+psql:01_document_model_jsonb.sql:4: NOTICE:  table "product_catalog" does not exist, skipping
+--- one sample document
+              jsonb_pretty              
+----------------------------------------
+ {                                     +
+     "name": "Product 6",              +
+     "tags": [                         +
+         "naijacart",                  +
+         "phones"                      +
+     ],                                +
+     "price": 215043.84,               +
+     "category": "Phones",             +
+     "attributes": {                   +
+         "ram_gb": 6,                  +
+         "dual_sim": true,             +
+         "storage_gb": 128             +
+     },                                +
+     "recent_reviews": [               +
+         {                             +
+             "rating": 4,              +
+             "comment": "Sample review"+
+         },                            +
+         {                             +
+             "rating": 5,              +
+             "comment": "Sample review"+
+         },                            +
+         {                             +
+             "rating": 3,              +
+             "comment": "Sample review"+
+         }                             +
+     ]                                 +
+ }
+(1 row)
+

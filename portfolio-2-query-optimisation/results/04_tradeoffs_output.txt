@@ -1,0 +1,35 @@
+SET
+Timing is on.
+--- index sizes (storage cost)
+          index           |  size   
+--------------------------+---------
+ order_item_pkey          | 18 MB
+ idx_orders_customer_date | 6184 kB
+ orders_pkey              | 4408 kB
+ idx_order_item_product   | 4392 kB
+ idx_orders_date          | 4040 kB
+ idx_orders_delivered     | 1656 kB
+ idx_product_cat_stock    | 808 kB
+ product_pkey             | 456 kB
+(8 rows)
+
+Time: 4.082 ms
+--- write cost: insert 20,000 orders into a copy WITHOUT the extra indexes
+CREATE TABLE
+Time: 1.829 ms
+INSERT 0 20000
+Time: 15.260 ms
+--- same insert into a copy WITH the same three orders indexes
+CREATE TABLE
+Time: 1.362 ms
+CREATE INDEX
+Time: 1.221 ms
+CREATE INDEX
+Time: 1.105 ms
+CREATE INDEX
+Time: 1.465 ms
+INSERT 0 20000
+Time: 42.329 ms
+--- freshness cost: refreshing the materialized view (without blocking readers)
+REFRESH MATERIALIZED VIEW
+Time: 567.342 ms

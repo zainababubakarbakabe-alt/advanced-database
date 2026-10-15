@@ -1,0 +1,32 @@
+# Key-value model (Redis 7): data that is hot, short-lived and accessed by a single key.
+# Run: redis-cli < 03_redis_keyvalue.redis
+FLUSHDB
+
+# 1) Shopping cart = HASH per customer (field = product_id, value = qty). Expires after 7 days of inactivity.
+HSET cart:4242 prod:101 2 prod:205 1
+HINCRBY cart:4242 prod:101 1
+EXPIRE cart:4242 604800
+HGETALL cart:4242
+TTL cart:4242
+
+# 2) Login session = STRING with 30-minute TTL
+SET session:abc123 "customer:4242" EX 1800
+GET session:abc123
+TTL session:abc123
+
+# 3) Flash sale: 3 units of product 9001. DECR is atomic, so concurrent buyers cannot oversell.
+SET flash:stock:9001 3
+DECR flash:stock:9001
+DECR flash:stock:9001
+DECR flash:stock:9001
+DECR flash:stock:9001
+# a negative result means sold out -> the app restores it with INCR and rejects the order
+INCR flash:stock:9001
+
+# 4) Real-time best-sellers = SORTED SET (score = units sold today)
+ZINCRBY bestsellers:today 5 "prod:101"
+ZINCRBY bestsellers:today 12 "prod:205"
+ZINCRBY bestsellers:today 7 "prod:330"
+ZINCRBY bestsellers:today 3 "prod:101"
+ZREVRANGE bestsellers:today 0 2 WITHSCORES
+ZREVRANK bestsellers:today "prod:101"

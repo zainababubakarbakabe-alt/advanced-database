@@ -1,0 +1,18 @@
+-- q5_low_stock_pending (before indexing)
+                                                 QUERY PLAN                                                 
+------------------------------------------------------------------------------------------------------------
+ Sort  (cost=509.03..509.20 rows=67 width=25) (actual time=1.293..1.297 rows=66 loops=1)
+   Sort Key: stock_qty, product_id
+   Sort Method: quicksort  Memory: 28kB
+   Buffers: shared hit=213
+   ->  Seq Scan on product  (cost=0.00..507.00 rows=67 width=25) (actual time=0.011..1.236 rows=66 loops=1)
+         Filter: ((stock_qty < 10) AND (category_id = 5))
+         Rows Removed by Filter: 19934
+         Buffers: shared hit=207
+ Planning:
+   Buffers: shared hit=81
+ Planning Time: 0.340 ms
+ Execution Time: 1.340 ms
+(12 rows)
+
+-- median of 5 further runs: 1.345 ms

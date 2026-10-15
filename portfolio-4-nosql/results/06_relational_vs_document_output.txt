@@ -1,0 +1,19 @@
+=== relational product page
+   Join Filter: (p.category_id = c.category_id)
+   Rows Removed by Join Filter: 8
+   ->  Hash Join (actual time=0.062..0.085 rows=1 loops=1)
+         ->  Seq Scan on seller s (actual time=0.004..0.017 rows=200 loops=1)
+               ->  Index Scan using product_pkey on product p (actual time=0.028..0.029 rows=1 loops=1)
+   ->  Seq Scan on category c (actual time=0.001..0.002 rows=9 loops=1)
+   SubPlan 1
+           ->  Subquery Scan on r (actual time=0.036..0.039 rows=2 loops=1)
+                       ->  Index Scan using review_product_id_customer_id_key on review (actual time=0.021..0.022 rows=2 loops=1)
+ Execution Time: 0.266 ms
+
+=== document product page
+ Index Scan using product_catalog_pkey on product_catalog (actual time=0.020..0.021 rows=1 loops=1)
+ Execution Time: 0.053 ms
+
+=== 2,000 random product pages each way (id chosen first so each page is an index lookup; length(...::text) forces every value to be fully read)
+relational: Time: 106.333 ms
+document:   Time: 24.020 ms

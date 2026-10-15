@@ -1,0 +1,39 @@
+-- q6b_repeat_customers_rewritten (before indexing)
+                                                                                    QUERY PLAN                                                                                     
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=47155.48..47155.50 rows=10 width=62) (actual time=415.946..415.951 rows=10 loops=1)
+   Buffers: shared hit=17139, temp read=218 written=380
+   ->  Sort  (cost=47155.48..47155.65 rows=67 width=62) (actual time=415.945..415.948 rows=10 loops=1)
+         Sort Key: (sum((sum(((oi.quantity)::numeric * oi.unit_price))))) DESC
+         Sort Method: top-N heapsort  Memory: 26kB
+         Buffers: shared hit=17139, temp read=218 written=380
+         ->  Nested Loop  (cost=46658.05..47154.03 rows=67 width=62) (actual time=376.149..414.901 rows=2590 loops=1)
+               Buffers: shared hit=17136, temp read=218 written=380
+               ->  HashAggregate  (cost=46657.76..46660.76 rows=67 width=48) (actual time=376.073..408.350 rows=2590 loops=1)
+                     Group Key: o.customer_id
+                     Filter: (count(*) >= 5)
+                     Batches: 5  Memory Usage: 8257kB  Disk Usage: 1776kB
+                     Rows Removed by Filter: 40728
+                     Buffers: shared hit=9366, temp read=218 written=380
+                     ->  GroupAggregate  (cost=1.47..44909.51 rows=99900 width=48) (actual time=0.036..332.754 rows=100130 loops=1)
+                           Group Key: o.order_id
+                           Buffers: shared hit=9366
+                           ->  Merge Join  (cost=1.47..40663.76 rows=299700 width=28) (actual time=0.019..193.858 rows=300390 loops=1)
+                                 Merge Cond: (o.order_id = oi.order_id)
+                                 Buffers: shared hit=9366
+                                 ->  Index Scan using orders_pkey on orders o  (cost=0.42..7494.42 rows=99900 width=16) (actual time=0.008..33.682 rows=100130 loops=1)
+                                       Filter: ((status)::text = 'DELIVERED'::text)
+                                       Rows Removed by Filter: 99870
+                                       Buffers: shared hit=2445
+                                 ->  Index Scan using order_item_pkey on order_item oi  (cost=0.42..28440.86 rows=600000 width=20) (actual time=0.008..79.098 rows=600000 loops=1)
+                                       Buffers: shared hit=6921
+               ->  Index Scan using customer_pkey on customer c  (cost=0.29..7.35 rows=1 width=22) (actual time=0.002..0.002 rows=1 loops=2590)
+                     Index Cond: (customer_id = o.customer_id)
+                     Buffers: shared hit=7770
+ Planning:
+   Buffers: shared hit=209
+ Planning Time: 0.808 ms
+ Execution Time: 416.322 ms
+(33 rows)
+
+-- median of 5 further runs: 424.122 ms

@@ -1,0 +1,13 @@
+# Local environment for the exercises (convenience file - not run when preparing the reference outputs, which used native installs)
+services:
+  postgres:
+    image: postgres:16
+    environment: { POSTGRES_USER: dbadmin, POSTGRES_PASSWORD: dbadmin, POSTGRES_DB: shopnaija }
+    ports: ["5432:5432"]
+    volumes: ["./portfolio-1-database-design:/docker-entrypoint-initdb.d:ro"]   # runs 01_schema.sql then 02_seed_data.sql
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+  mongo:
+    image: mongo:7
+    ports: ["27017:27017"]

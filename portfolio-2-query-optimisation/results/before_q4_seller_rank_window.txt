@@ -1,0 +1,52 @@
+-- q4_seller_rank_window (before indexing)
+                                                                           QUERY PLAN                                                                            
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Incremental Sort  (cost=21132.96..21234.81 rows=2000 width=36) (actual time=573.706..573.713 rows=18 loops=1)
+   Sort Key: c.name, (rank() OVER (?))
+   Presorted Key: c.name
+   Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+   Buffers: shared hit=4628
+   ->  WindowAgg  (cost=21132.59..21172.59 rows=2000 width=36) (actual time=573.545..573.684 rows=18 loops=1)
+         Run Condition: (rank() OVER (?) <= 3)
+         Buffers: shared hit=4622
+         ->  Sort  (cost=21132.59..21137.59 rows=2000 width=28) (actual time=573.535..573.607 rows=600 loops=1)
+               Sort Key: c.name, (sum(oi.quantity)) DESC
+               Sort Method: quicksort  Memory: 57kB
+               Buffers: shared hit=4622
+               ->  HashAggregate  (cost=21002.93..21022.93 rows=2000 width=28) (actual time=573.033..573.124 rows=600 loops=1)
+                     Group Key: c.name, s.business_name
+                     Batches: 1  Memory Usage: 177kB
+                     Buffers: shared hit=4622
+                     ->  Hash Join  (cost=664.73..16502.93 rows=600000 width=24) (actual time=6.624..427.206 rows=600000 loops=1)
+                           Hash Cond: (p.category_id = c.category_id)
+                           Buffers: shared hit=4622
+                           ->  Hash Join  (cost=663.50..14259.21 rows=600000 width=18) (actual time=6.587..322.397 rows=600000 loops=1)
+                                 Hash Cond: (p.seller_id = s.seller_id)
+                                 Buffers: shared hit=4621
+                                 ->  Hash Join  (cost=657.00..12644.33 rows=600000 width=12) (actual time=6.518..211.900 rows=600000 loops=1)
+                                       Hash Cond: (oi.product_id = p.product_id)
+                                       Buffers: shared hit=4619
+                                       ->  Seq Scan on order_item oi  (cost=0.00..10412.00 rows=600000 width=12) (actual time=0.005..52.210 rows=600000 loops=1)
+                                             Buffers: shared hit=4412
+                                       ->  Hash  (cost=407.00..407.00 rows=20000 width=16) (actual time=6.380..6.381 rows=20000 loops=1)
+                                             Buckets: 32768  Batches: 1  Memory Usage: 1194kB
+                                             Buffers: shared hit=207
+                                             ->  Seq Scan on product p  (cost=0.00..407.00 rows=20000 width=16) (actual time=0.004..2.575 rows=20000 loops=1)
+                                                   Buffers: shared hit=207
+                                 ->  Hash  (cost=4.00..4.00 rows=200 width=14) (actual time=0.054..0.055 rows=200 loops=1)
+                                       Buckets: 1024  Batches: 1  Memory Usage: 18kB
+                                       Buffers: shared hit=2
+                                       ->  Seq Scan on seller s  (cost=0.00..4.00 rows=200 width=14) (actual time=0.003..0.020 rows=200 loops=1)
+                                             Buffers: shared hit=2
+                           ->  Hash  (cost=1.10..1.10 rows=10 width=14) (actual time=0.017..0.017 rows=10 loops=1)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                 Buffers: shared hit=1
+                                 ->  Seq Scan on category c  (cost=0.00..1.10 rows=10 width=14) (actual time=0.005..0.006 rows=10 loops=1)
+                                       Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=323 read=2
+ Planning Time: 1.200 ms
+ Execution Time: 573.952 ms
+(46 rows)
+
+-- median of 5 further runs: 457.335 ms

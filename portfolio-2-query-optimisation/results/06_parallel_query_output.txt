@@ -1,0 +1,10 @@
+machine CPUs: 2
+q3_revenue_by_category     workers=0  launched=0   median= 1062.321 ms
+q3_revenue_by_category     workers=2  launched=2   median=  605.865 ms
+q3_revenue_by_category     workers=4  launched=2   median=  565.854 ms
+q4_seller_rank_window      workers=0  launched=0   median=  435.141 ms
+q4_seller_rank_window      workers=2  launched=2   median=  239.165 ms
+q4_seller_rank_window      workers=4  launched=2   median=  251.333 ms
+q6_cte_repeat_customers    workers=0  launched=0   median=  469.714 ms
+q6_cte_repeat_customers    workers=2  launched=0   median=  441.956 ms
+q6_cte_repeat_customers    workers=4  launched=0   median=  452.612 ms

@@ -1,0 +1,4 @@
+TB attempt 1: committed
+TA attempt 1: serialization failure (40001) -> retrying
+TA attempt 2: committed
+final: 401=1, 402=0 (rule holds: total >= 1)

@@ -1,0 +1,6 @@
+before: price=70000.00 xmin=1784
+writer (uncommitted): price=75000, holds row lock for 2 s
+reader during write (READ UNCOMMITTED): price=70000.00
+reader waited 47 ms (no blocking)
+
+after commit: price=75000.00 xmin=1785 (new row version)

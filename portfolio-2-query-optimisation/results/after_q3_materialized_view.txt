@@ -1,0 +1,14 @@
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=5.32..5.57 rows=100 width=218) (actual time=0.065..0.071 rows=100 loops=1)
+   Sort Key: month, category
+   Sort Method: quicksort  Memory: 31kB
+   Buffers: shared hit=7
+   ->  Seq Scan on mv_monthly_category_revenue  (cost=0.00..2.00 rows=100 width=218) (actual time=0.005..0.011 rows=100 loops=1)
+         Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=80 read=1
+ Planning Time: 0.368 ms
+ Execution Time: 0.092 ms
+(10 rows)
+

@@ -1,0 +1,20 @@
+=== Isolation level: READ COMMITTED
+T1 first read  price = 10000.00
+T2 changed price to 12000 and committed
+
+T1 second read price = 12000.00
+=== Isolation level: REPEATABLE READ
+T1 first read  price = 10000.00
+T2 changed price to 12000 and committed
+
+T1 second read price = 10000.00
+
+=== SERIALIZABLE: write skew prevented (rule: products 401+402 must keep at least one unit in stock)
+TA sees total stock = 2
+
+TB sees total stock = 2
+
+ERROR:  could not serialize access due to read/write dependencies among transactions
+DETAIL:  Reason code: Canceled on identification as a pivot, during write.
+HINT:  The transaction might succeed if retried.
+final: 401=0 402=1

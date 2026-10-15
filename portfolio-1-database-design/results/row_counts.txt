@@ -1,0 +1,11 @@
+ table_name | count  
+------------+--------
+ product    |  20000
+ customer   |  50000
+ review     |  59999
+ delivery   | 166594
+ orders     | 200000
+ payment    | 200000
+ order_item | 600000
+(7 rows)
+

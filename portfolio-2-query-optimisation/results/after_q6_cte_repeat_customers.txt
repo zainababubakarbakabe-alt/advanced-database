@@ -1,0 +1,47 @@
+-- q6_cte_repeat_customers (after indexing)
+                                                                              QUERY PLAN                                                                               
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=58736.37..58736.40 rows=10 width=62) (actual time=415.045..415.052 rows=10 loops=1)
+   Buffers: shared hit=6774, temp read=1434 written=1439
+   ->  Sort  (cost=58736.37..58770.60 rows=13691 width=62) (actual time=415.044..415.049 rows=10 loops=1)
+         Sort Key: s.lifetime_value DESC
+         Sort Method: top-N heapsort  Memory: 26kB
+         Buffers: shared hit=6774, temp read=1434 written=1439
+         ->  Hash Join  (cost=57240.26..58440.52 rows=13691 width=62) (actual time=405.945..414.182 rows=2590 loops=1)
+               Hash Cond: (c.customer_id = s.customer_id)
+               Buffers: shared hit=6771, temp read=1434 written=1439
+               ->  Seq Scan on customer c  (cost=0.00..1069.00 rows=50000 width=22) (actual time=0.004..3.604 rows=50000 loops=1)
+                     Buffers: shared hit=569
+               ->  Hash  (cost=57069.12..57069.12 rows=13691 width=48) (actual time=405.869..405.872 rows=2590 loops=1)
+                     Buckets: 16384  Batches: 1  Memory Usage: 290kB
+                     Buffers: shared hit=6202, temp read=1434 written=1439
+                     ->  Subquery Scan on s  (cost=51835.34..57069.12 rows=13691 width=48) (actual time=258.442..405.104 rows=2590 loops=1)
+                           Buffers: shared hit=6202, temp read=1434 written=1439
+                           ->  GroupAggregate  (cost=51835.34..56932.21 rows=13691 width=48) (actual time=258.441..404.784 rows=2590 loops=1)
+                                 Group Key: o.customer_id
+                                 Filter: (count(DISTINCT o.order_id) >= 5)
+                                 Rows Removed by Filter: 40728
+                                 Buffers: shared hit=6202, temp read=1434 written=1439
+                                 ->  Sort  (cost=51835.34..52582.14 rows=298719 width=28) (actual time=258.396..294.341 rows=300390 loops=1)
+                                       Sort Key: o.customer_id, o.order_id
+                                       Sort Method: external merge  Disk: 11472kB
+                                       Buffers: shared hit=6202, temp read=1434 written=1439
+                                       ->  Hash Join  (cost=5531.66..17518.70 rows=298719 width=28) (actual time=34.001..172.228 rows=300390 loops=1)
+                                             Hash Cond: (oi.order_id = o.order_id)
+                                             Buffers: shared hit=6199
+                                             ->  Seq Scan on order_item oi  (cost=0.00..10412.00 rows=600000 width=20) (actual time=0.003..41.273 rows=600000 loops=1)
+                                                   Buffers: shared hit=4412
+                                             ->  Hash  (cost=4287.00..4287.00 rows=99573 width=16) (actual time=33.534..33.535 rows=100130 loops=1)
+                                                   Buckets: 131072  Batches: 1  Memory Usage: 5718kB
+                                                   Buffers: shared hit=1787
+                                                   ->  Seq Scan on orders o  (cost=0.00..4287.00 rows=99573 width=16) (actual time=0.005..18.833 rows=100130 loops=1)
+                                                         Filter: ((status)::text = 'DELIVERED'::text)
+                                                         Rows Removed by Filter: 99870
+                                                         Buffers: shared hit=1787
+ Planning:
+   Buffers: shared hit=288
+ Planning Time: 0.880 ms
+ Execution Time: 416.100 ms
+(41 rows)
+
+-- median of 5 further runs: 432.673 ms

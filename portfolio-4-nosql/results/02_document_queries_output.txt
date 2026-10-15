@@ -1,0 +1,36 @@
+--- Q-doc1: phones with exactly 8GB RAM and 128GB storage (no GIN index: sequential scan)
+                                             QUERY PLAN                                             
+----------------------------------------------------------------------------------------------------
+ Seq Scan on product_catalog (actual rows=277 loops=1)
+   Filter: (doc @> '{"category": "Phones", "attributes": {"ram_gb": 8, "storage_gb": 128}}'::jsonb)
+   Rows Removed by Filter: 19723
+ Planning Time: 0.344 ms
+ Execution Time: 6.196 ms
+(5 rows)
+
+--- same query with GIN index
+                                                  QUERY PLAN                                                  
+--------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on product_catalog (actual rows=277 loops=1)
+   Recheck Cond: (doc @> '{"category": "Phones", "attributes": {"ram_gb": 8, "storage_gb": 128}}'::jsonb)
+   Heap Blocks: exact=274
+   ->  Bitmap Index Scan on idx_catalog_doc_gin (actual rows=277 loops=1)
+         Index Cond: (doc @> '{"category": "Phones", "attributes": {"ram_gb": 8, "storage_gb": 128}}'::jsonb)
+ Planning Time: 0.178 ms
+ Execution Time: 0.625 ms
+(7 rows)
+
+--- result sample
+ product_id |    name     |                       attrs                        
+------------+-------------+----------------------------------------------------
+         60 | Product 60  | {"ram_gb": 8, "dual_sim": true, "storage_gb": 128}
+        132 | Product 132 | {"ram_gb": 8, "dual_sim": true, "storage_gb": 128}
+        204 | Product 204 | {"ram_gb": 8, "dual_sim": true, "storage_gb": 128}
+(3 rows)
+
+--- Q-doc2: average rating inside embedded reviews for laptops with 16GB RAM
+ avg_embedded_rating | laptops 
+---------------------+---------
+                2.97 |    2510
+(1 row)
+

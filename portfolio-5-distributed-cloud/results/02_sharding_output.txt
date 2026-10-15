@@ -1,0 +1,36 @@
+psql:02_sharding_demo.sql:5: NOTICE:  schema "sharded" does not exist, skipping
+psql:02_sharding_demo.sql:7: NOTICE:  server "shard_b" does not exist, skipping
+--- insert 20,000 orders through the parent table: rows are routed by hash(customer_id)
+--- rows per shard
+      shard       | count 
+------------------+-------
+ shard 1 (node A) | 10098
+ shard 2 (node B) |  9902
+(2 rows)
+
+--- single-customer query: partition pruning sends it to ONE shard
+           QUERY PLAN           
+--------------------------------
+ Seq Scan on orders_s1 orders
+   Filter: (customer_id = 4242)
+(2 rows)
+
+--- cross-shard analytical query: must contact both shards (scatter-gather)
+                   QUERY PLAN                   
+------------------------------------------------
+ HashAggregate
+   Group Key: orders.status
+   ->  Append
+         ->  Seq Scan on orders_s1 orders_1
+         ->  Foreign Scan on orders_s2 orders_2
+(5 rows)
+
+  status   | count |     sum     
+-----------+-------+-------------
+ CANCELLED |  1679 |  5815281.00
+ DELIVERED | 10042 | 34885782.00
+ PAID      |  3233 | 11325038.00
+ PENDING   |  1690 |  5955348.00
+ SHIPPED   |  3356 | 12008551.00
+(5 rows)
+

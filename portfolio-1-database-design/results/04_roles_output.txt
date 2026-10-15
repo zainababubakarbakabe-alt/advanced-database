@@ -1,0 +1,6 @@
+analyst reads anonymised view:
+600000 rows
+analyst tries customer emails:
+ERROR:  permission denied for table customer
+analyst tries to delete an order:
+ERROR:  permission denied for table orders

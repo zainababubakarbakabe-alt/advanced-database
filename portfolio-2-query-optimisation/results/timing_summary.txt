@@ -1,0 +1,8 @@
+query                                 before (ms)     after (ms)  speed-up
+q1_customer_order_history                  12.017          0.311     38.6x
+q2_top_products_90_days                   196.018        161.887      1.2x
+q3_revenue_by_category                    952.062        959.476      1.0x
+q4_seller_rank_window                     457.335        446.769      1.0x
+q5_low_stock_pending                        1.345          0.263      5.1x
+q6_cte_repeat_customers                   429.038        432.673      1.0x
+q6b_repeat_customers_rewritten            424.122        435.151      1.0x

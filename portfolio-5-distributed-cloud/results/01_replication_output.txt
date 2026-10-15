@@ -1,0 +1,38 @@
+=== 1. Replication topology (run on primary)
+ client_addr |   state   | sync_state |  sent_lsn  | replay_lsn 
+-------------+-----------+------------+------------+------------
+ 127.0.0.1   | streaming | async      | 0/19000000 | 0/19000000
+(1 row)
+
+=== 2. Role check
+primary in_recovery=false
+replica in_recovery=true
+
+=== 3. Write on primary, read from replica (asynchronous replication)
+primary price  = 99999.00
+replica price  = 99999.00
+
+=== 4. Replica is read-only (consistency/safety)
+ERROR:  cannot execute UPDATE in a read-only transaction
+
+=== 5. Replication lag under a bulk write (10,000 stock-log rows)
+lag bytes (primary view) = 0
+replica replay delay    = 00:00:00.09633
+bulk rows visible on replica = 10000
+
+=== 6. SYNCHRONOUS replication: consistency vs availability (CAP in practice)
+sync_state now = sync
+commit with standby UP returned in 59 ms
+--- standby goes DOWN; a commit on the primary now has to wait for it
+after 3 s the committing session is still waiting: state=active, wait_event=SyncRep
+-> writes are UNAVAILABLE while the only synchronous standby is down (CAP: consistency chosen over availability)
+WARNING:  canceling wait for synchronous replication due to user request
+DETAIL:  The transaction has already committed locally, but might not have been replicated to the standby.
+(after the cancel, the row is committed locally but was NOT confirmed by any standby)
+back to sync_state = async
+
+=== 7. FAILOVER: primary 'crashes' (fast stop), replica is promoted
+new primary in_recovery=false
+write accepted on promoted node
+service continues, price = 88888.00
+(restart the old primary and rebuild it as a replica with pg_basebackup/pg_rewind before re-use)
