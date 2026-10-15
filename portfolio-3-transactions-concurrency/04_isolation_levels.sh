@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Demo C: isolation levels. Session 1 reads a product price twice while session 2 changes it in between.
+# Cross-platform PATH: support macOS Homebrew, Linux, and Windows Git Bash
+[ -d "/opt/homebrew/bin" ] && export PATH="/opt/homebrew/bin:$PATH"
+[ -d "/usr/local/bin" ] && export PATH="/usr/local/bin:$PATH"
+for pg in /c/"Program Files"/PostgreSQL/*/bin; do [ -d "$pg" ] && export PATH="$pg:$PATH"; done
 export PGPASSWORD=${PGPASSWORD:-dbadmin}
 P="psql -h localhost -U dbadmin -d shopnaija -X -q -t -A"
 run() {  # $1 = isolation level

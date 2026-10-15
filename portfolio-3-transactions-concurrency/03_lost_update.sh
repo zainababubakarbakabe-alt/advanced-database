@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Demo B: LOST UPDATE (READ COMMITTED) then the fixes. Two concurrent sessions buy product 201 (stock = 1).
+# Cross-platform PATH: support macOS Homebrew, Linux, and Windows Git Bash
+[ -d "/opt/homebrew/bin" ] && export PATH="/opt/homebrew/bin:$PATH"
+[ -d "/usr/local/bin" ] && export PATH="/usr/local/bin:$PATH"
+for pg in /c/"Program Files"/PostgreSQL/*/bin; do [ -d "$pg" ] && export PATH="$pg:$PATH"; done
 export PGPASSWORD=${PGPASSWORD:-dbadmin}
 P="psql -h localhost -U dbadmin -d shopnaija -X -q -t -A"
 $P -c "UPDATE shop.product SET stock_qty = 1 WHERE product_id = 201"

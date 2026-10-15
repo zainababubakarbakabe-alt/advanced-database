@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Suitability test: loading ONE product page (product + category + seller + latest reviews).
 # Relational = joins + a sub-query on review; Document = one primary-key read of a JSONB document.
+# Cross-platform PATH: support macOS Homebrew, Linux, and Windows Git Bash
+[ -d "/opt/homebrew/bin" ] && export PATH="/opt/homebrew/bin:$PATH"
+[ -d "/usr/local/bin" ] && export PATH="/usr/local/bin:$PATH"
+for pg in /c/"Program Files"/PostgreSQL/*/bin; do [ -d "$pg" ] && export PATH="$pg:$PATH"; done
 export PGPASSWORD=${PGPASSWORD:-dbadmin}
 P="psql -h localhost -U dbadmin -d shopnaija -X -q"
 REL="SELECT p.product_id, p.name, p.price, c.name AS category, s.business_name,

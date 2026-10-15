@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # Rebuilds the database and regenerates EVERY file in the results/ folders, in order.
-# Needs: PostgreSQL 16 on :5432 (database shopnaija, user dbadmin), Redis on :6379, bash, Graphviz.
+# Needs: PostgreSQL 16 on :5432 (database shopnaija, user dbadmin), Redis on :6379, MongoDB 7 (mongod/mongosh), bash, Graphviz.
 # Portfolio 5 additionally needs a streaming replica on :5433 - see portfolio-5-distributed-cloud/README.md.
 set -uo pipefail
+# Cross-platform PATH: support macOS Homebrew, Linux, and Windows Git Bash
+[ -d "/opt/homebrew/bin" ] && export PATH="/opt/homebrew/bin:$PATH"
+[ -d "/usr/local/bin" ] && export PATH="/usr/local/bin:$PATH"
+for pg in /c/"Program Files"/PostgreSQL/*/bin; do [ -d "$pg" ] && export PATH="$pg:$PATH"; done
 export PGPASSWORD=${PGPASSWORD:-dbadmin}
 P="psql -h localhost -U dbadmin -d shopnaija -X -v ON_ERROR_STOP=1"
 ROOT=$(cd "$(dirname "$0")" && pwd)
@@ -18,7 +22,7 @@ $P -c "SELECT 'customer' AS table_name, count(*) FROM shop.customer UNION ALL SE
        UNION ALL SELECT 'payment', count(*) FROM shop.payment UNION ALL SELECT 'delivery', count(*) FROM shop.delivery
        UNION ALL SELECT 'review', count(*) FROM shop.review" > results/row_counts.txt
 ./04_test_roles.sh > results/04_roles_output.txt 2>&1
-dot -Tpng -Gdpi=130 diagrams/erd.dot -o diagrams/erd.png
+which dot >/dev/null 2>&1 && dot -Tpng -Gdpi=130 diagrams/erd.dot -o diagrams/erd.png || true
 
 echo "[P2] query optimisation"
 cd "$ROOT/portfolio-2-query-optimisation"; mkdir -p results; rm -f results/*.txt
@@ -46,6 +50,7 @@ cd "$ROOT/portfolio-4-nosql"; mkdir -p results
 $P -q -f 01_document_model_jsonb.sql > results/01_document_model_output.txt 2>&1
 $P -q -f 02_document_queries.sql > results/02_document_queries_output.txt 2>&1
 ./run_redis_demo.sh > results/03_redis_output.txt 2>&1
+./run_mongo_demo.sh > results/04_mongodb_output.txt 2>&1
 ./06_relational_vs_document.sh > results/06_relational_vs_document_output.txt 2>&1
 
 echo "done. Portfolio 5 is run separately (it stops and promotes servers)."

@@ -4,15 +4,11 @@ Same case study (NaijaCart). Principle: **keep the relational database for trans
 
 | Model | Used for | Technology | Executed here? |
 |---|---|---|---|
-| Document | Product catalogue with category-specific attributes and embedded reviews | PostgreSQL `JSONB` + GIN index (`01`, `02`, `06`); MongoDB version in `04_mongodb_design.js` | JSONB: **yes**. MongoDB: **run it yourself** (see note) |
+| Document | Product catalogue with category-specific attributes and embedded reviews | PostgreSQL `JSONB` + GIN index (`01`, `02`, `06`); MongoDB version in `04_mongodb_design.js` | JSONB: **yes**. MongoDB: **yes** (`run_mongo_demo.sh`) |
 | Key-value | Shopping cart, session, flash-sale stock, live best-sellers | Redis 7 (`03_redis_keyvalue.redis`, `run_redis_demo.sh`) | **yes** |
 | Graph | "Customers who bought this also bought" | Neo4j/Cypher (`05_graph_recommendation_cypher.md`) | design only |
 
-> **MongoDB / graph:** MongoDB could not be downloaded in the build environment, so `04_mongodb_design.js` has not been executed yet. To run it:
-> ```bash
-> docker run -d --name mongo -p 27017:27017 mongo:7
-> docker exec -i mongo mongosh < 04_mongodb_design.js > results/04_mongodb_output.txt
-> ```
+> **MongoDB / graph:** run `./run_mongo_demo.sh > results/04_mongodb_output.txt` (starts `mongod` if needed and resets the `naijacart` database first).
 > Screenshot the `explain("executionStats")` output and look for `IXSCAN` (index used) and `totalDocsExamined`. The Cypher file stays a design unless you also run Neo4j.
 
 ## 1. Document model - why it suits the catalogue

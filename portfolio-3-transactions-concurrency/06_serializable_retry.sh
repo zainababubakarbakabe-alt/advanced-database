@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Demo E: SERIALIZABLE needs a RETRY loop. Two transfers of stock between warehouses-style counters
 # run concurrently; whoever gets "could not serialize" (SQLSTATE 40001) retries until it succeeds.
+# Cross-platform PATH: support macOS Homebrew, Linux, and Windows Git Bash
+[ -d "/opt/homebrew/bin" ] && export PATH="/opt/homebrew/bin:$PATH"
+[ -d "/usr/local/bin" ] && export PATH="/usr/local/bin:$PATH"
+for pg in /c/"Program Files"/PostgreSQL/*/bin; do [ -d "$pg" ] && export PATH="$pg:$PATH"; done
 export PGPASSWORD=${PGPASSWORD:-dbadmin}
 P="psql -h localhost -U dbadmin -d shopnaija -X -q -t -A -v ON_ERROR_STOP=1"
 $P -c "UPDATE shop.product SET stock_qty = 1 WHERE product_id IN (401,402)"

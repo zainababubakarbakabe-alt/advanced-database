@@ -1,0 +1,122 @@
+
+=== 1. Insert products (category-specific attributes, embedded recent reviews) ===
+[
+  {
+    _id: 6,
+    name: 'Phone X',
+    seller_id: 12,
+    price: 205453.58,
+    category: [
+      'Electronics',
+      'Phones'
+    ],
+    attributes: {
+      ram_gb: 8,
+      storage_gb: 128,
+      dual_sim: true
+    },
+    stock_qty: 40,
+    recent_reviews: [
+      {
+        customer_id: 77,
+        rating: 4,
+        comment: 'Fast delivery'
+      }
+    ]
+  },
+  {
+    _id: 7,
+    name: 'Laptop Y',
+    seller_id: 31,
+    price: 640000,
+    category: [
+      'Electronics',
+      'Laptops'
+    ],
+    attributes: {
+      cpu: 'i7',
+      ram_gb: 16
+    },
+    stock_qty: 12,
+    recent_reviews: []
+  }
+]
+PASS  products inserted: expected 2, got 2
+
+=== 2. Insert order (embedded items, shipping address and payment) ===
+{
+  _id: 1001,
+  customer_id: 4242,
+  status: 'PAID',
+  order_date: ISODate('2026-10-13T10:00:00.000Z'),
+  ship_to: {
+    city: 'Abuja',
+    state: 'FCT',
+    street: '12 Main Street'
+  },
+  items: [
+    {
+      product_id: 6,
+      name: 'Phone X',
+      qty: 1,
+      unit_price: 205453.58
+    }
+  ],
+  payment: {
+    method: 'CARD',
+    amount: 205453.58,
+    status: 'SUCCESS'
+  }
+}
+PASS  orders inserted: expected 1, got 1
+
+=== 3. Indexes ===
+products: _id_, category_1_attributes.ram_gb_1_price_1
+orders:   _id_, customer_id_1_order_date_-1
+PASS  products compound index exists: expected true, got true
+PASS  orders compound index exists: expected true, got true
+
+=== 4. Query: phones with 8 GB RAM under 300,000, cheapest first ===
+[
+  {
+    _id: 6,
+    name: 'Phone X',
+    price: 205453.58,
+    attributes: {
+      ram_gb: 8,
+      storage_gb: 128,
+      dual_sim: true
+    }
+  }
+]
+PASS  matching phones: expected ["Phone X"], got ["Phone X"]
+
+=== 5. explain("executionStats") for the query above ===
+winning plan:       FETCH <- IXSCAN
+index used:         category_1_attributes.ram_gb_1_price_1
+index bounds:       {"category":["[\"Phones\", \"Phones\"]"],"attributes.ram_gb":["[8, 8]"],"price":["[-inf.0, 300000)"]}
+nReturned:          1
+totalKeysExamined:  1
+totalDocsExamined:  1
+executionTimeMs:    0
+PASS  index scan used (no COLLSCAN): expected "IXSCAN", got "IXSCAN"
+PASS  index name: expected "category_1_attributes.ram_gb_1_price_1", got "category_1_attributes.ram_gb_1_price_1"
+PASS  keys examined = docs returned: expected [1,1,1], got [1,1,1]
+
+=== 6. Aggregation: revenue per payment method (PAID orders) ===
+[
+  {
+    _id: 'CARD',
+    revenue: 205453.58,
+    orders: 1
+  }
+]
+PASS  revenue per method: expected [{"_id":"CARD","revenue":205453.58,"orders":1}], got [{"_id":"CARD","revenue":205453.58,"orders":1}]
+
+=== 7. Atomic stock decrement (single-document atomicity, no transaction needed) ===
+stock_qty before: 40, after: 39
+PASS  documents modified: expected 1, got 1
+PASS  stock decremented by 1: expected 39, got 39
+
+=== Summary ===
+ALL CHECKS PASSED

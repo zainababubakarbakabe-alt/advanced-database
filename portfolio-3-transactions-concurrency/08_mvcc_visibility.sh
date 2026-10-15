@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Demo G: MVCC - readers never wait for writers, and PostgreSQL never shows uncommitted data
 # (READ UNCOMMITTED behaves as READ COMMITTED). xmin = id of the transaction that created the row version.
+# Cross-platform PATH: support macOS Homebrew, Linux, and Windows Git Bash
+[ -d "/opt/homebrew/bin" ] && export PATH="/opt/homebrew/bin:$PATH"
+[ -d "/usr/local/bin" ] && export PATH="/usr/local/bin:$PATH"
+for pg in /c/"Program Files"/PostgreSQL/*/bin; do [ -d "$pg" ] && export PATH="$pg:$PATH"; done
 export PGPASSWORD=${PGPASSWORD:-dbadmin}
 P="psql -h localhost -U dbadmin -d shopnaija -X -q -t -A"
 $P -c "UPDATE shop.product SET price = 70000 WHERE product_id = 701"

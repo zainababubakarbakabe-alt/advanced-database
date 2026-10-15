@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 # Full-scan analytics (Q3, Q4, Q6) cannot be helped by indexes - can parallel workers help instead?
+# Cross-platform PATH: support macOS Homebrew, Linux, and Windows Git Bash
+[ -d "/opt/homebrew/bin" ] && export PATH="/opt/homebrew/bin:$PATH"
+[ -d "/usr/local/bin" ] && export PATH="/usr/local/bin:$PATH"
+for pg in /c/"Program Files"/PostgreSQL/*/bin; do [ -d "$pg" ] && export PATH="$pg:$PATH"; done
 export PGPASSWORD=${PGPASSWORD:-dbadmin}
-echo "machine CPUs: $(nproc)"
+cd "$(dirname "${BASH_SOURCE[0]}")"
+CPUS=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo "2")
+echo "machine CPUs: $CPUS"
 for q in q3_revenue_by_category q4_seller_rank_window q6_cte_repeat_customers; do
   Q=$(grep -v '^--' queries/$q.sql | tr '\n' ' ' | sed 's/;\s*$//')
   for w in 0 2 4; do
