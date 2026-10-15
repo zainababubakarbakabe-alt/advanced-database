@@ -1,64 +1,36 @@
-# Advanced Database Systems Portfolio: NaijaCart Marketplace
+# NaijaCart - Advanced Database Portfolio
 
-This repository contains my complete coursework portfolio for the **Advanced Database Systems** module. 
+Coursework portfolio for Advanced Database Systems. The project uses a simulated Nigerian e-commerce marketplace called **NaijaCart** (similar to Jumia or Konga) to test relational schema design, indexing, transactions, NoSQL models, and distributed database setups.
 
-Across five interconnected activities, I designed, implemented, benchmarked, and tested the database infrastructure for **NaijaCart**—a Nigerian multi-vendor e-commerce marketplace modeled after platforms like Jumia and Konga. The same case study is maintained throughout the entire project to evaluate relational design, query optimization, concurrency control, NoSQL document/key-value storage, and distributed architectures under realistic workload demands.
+## Folders
 
----
+* `portfolio-1-database-design`: 11-table BCNF schema, seed data, ER diagram, and user roles.
+* `portfolio-2-query-optimisation`: 7 queries tested with EXPLAIN ANALYZE before and after indexing, plus a materialized view test.
+* `portfolio-3-transactions-concurrency`: Checkout function, concurrency tests (lost updates, deadlocks, isolation levels), and locking.
+* `portfolio-4-nosql`: PostgreSQL JSONB document catalogue, Redis for carts/sessions, and MongoDB/graph designs.
+* `portfolio-5-distributed-cloud`: Streaming replication, failover test, and hash sharding with `postgres_fdw`.
+* `docs`: The 3-page report (`final-documentation.pdf`), Word copy, and screenshots.
 
-## Folders in this Project
+## Quick Start
 
-* **portfolio-1-database-design**: 11-table BCNF schema, seed generator for 600k rows, ER diagram, database constraints, and least-privilege roles.
-* **portfolio-2-query-optimisation**: 7 queries tested with EXPLAIN (ANALYZE, BUFFERS) before and after indexing, materialized view, and memory tuning.
-* **portfolio-3-transactions-concurrency**: PL/pgSQL checkout function, concurrency scripts for lost updates, deadlocks, isolation levels, and locking.
-* **portfolio-4-nosql**: JSONB document catalogue with GIN indexing, Redis 7 carts and sessions, and MongoDB/graph designs.
-* **portfolio-5-distributed-cloud**: Streaming replication with failover demo, hash sharding via `postgres_fdw`, and AWS cloud architecture.
-* **docs**: The 3-page LMS submission report (`final-documentation.pdf`), Word doc, and visual evidence charts.
+You will need PostgreSQL (14 or 16) and Redis running locally.
 
----
-
-## Setup & Quick Start
-
-### Prerequisites
-* **PostgreSQL** 14+ (tested on PostgreSQL 14 and 16 with `postgres_fdw`)
-* **Redis** 7 (for Portfolio 4 caching and session demos)
-* **Bash** (macOS, Linux, or Windows with Git Bash)
-
-### Automated Build (Portfolios 1 to 4)
-The repository includes a master build script that initializes the database, seeds all 600,000 records, applies indexes, runs concurrency tests, and regenerates test logs:
+To set up the database and run all benchmarks for Portfolios 1 to 4:
 
 ```bash
-# 1. Create the database and administrative user in PostgreSQL:
 createdb shopnaija
-
-# 2. Run the automated suite (takes ~2 minutes):
 ./run_all.sh
 ```
 
-> **Note on Data Determinism:** Data generation uses a fixed pseudo-random seed (`setseed(0.42)`). Every full rebuild produces the exact same row counts (50,000 customers, 20,000 products, 200,000 orders, 600,000 order items) and identical query plans across machines.
+This takes about 2 minutes. It loads 50,000 customers, 20,000 products, 200,000 orders, and 600,000 order items. The seed uses `setseed(0.42)`, so the data and query plans are identical on every run.
 
-### Running Portfolio 5
-Because Portfolio 5 demonstrates server failover and multi-instance foreign data wrappers, it is run separately through its dedicated test script. Full step-by-step instructions are provided in [portfolio-5-distributed-cloud/README.md](portfolio-5-distributed-cloud/README.md).
+Portfolio 5 involves stopping and promoting database nodes, so it is run separately (instructions are inside `portfolio-5-distributed-cloud/README.md`).
 
----
+## What's Executed vs Designed
 
-## Implementation Details
+* **Tested & executed:** Everything in Portfolios 1, 2, and 3; the PostgreSQL JSONB and Redis parts of Portfolio 4; and the replication and sharding demos in Portfolio 5. All terminal outputs and plans are saved in each folder's `results/` directory.
+* **Designs only:** The MongoDB script and Neo4j Cypher recommendation model in Portfolio 4, and the multi-region AWS setup in Portfolio 5 are architectural designs submitted for comparison.
 
-All empirical results, execution plans, and terminal outputs are captured in each folder's `results/` directory:
-* **Fully Implemented & Benchmarked Locally:**
-  * Complete relational schema, constraints, and NDPA 2023 security roles (Portfolio 1)
-  * All 7 query execution plans before/after optimization, `work_mem` tests, and parallel worker benchmarks (Portfolio 2)
-  * Multi-session concurrency test harnesses for lost updates, isolation levels, and deadlocks (Portfolio 3)
-  * PostgreSQL JSONB document store, GIN index lookups, and Redis key-value workflows (Portfolio 4)
-  * Streaming replication standby failover and remote foreign table sharding (Portfolio 5)
-* **Architectural & Comparative Designs:**
-  * MongoDB document modeling (`04_mongodb_design.js`) and Neo4j Cypher recommendation graphs (`05_graph_recommendation_cypher.md`) are documented for architectural comparison against the relational and JSONB implementations.
-  * The multi-region cloud deployment architecture is detailed in Portfolio 5.
+## Report
 
----
-
-## Assessment Documentation
-The final formal documentation required for LMS submission is located in the [docs/](docs/) directory:
-* **[final-documentation.pdf](docs/final-documentation.pdf)**: Compiled 3-page report including the case study statement, query analysis, concurrency evaluation, NoSQL trade-offs, distributed design, and individual reflection.
-* **[final-documentation.docx](docs/final-documentation.docx)**: Editable Word document format.
-* **[evidence/](docs/evidence/)**: High-resolution terminal capture collages and query plan charts supporting the written report.
+The required LMS documentation is in [docs/final-documentation.pdf](docs/final-documentation.pdf) (Word version is in [docs/final-documentation.docx](docs/final-documentation.docx)).
