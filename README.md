@@ -1,4 +1,4 @@
-# NaijaCart - Advanced Database Portfolio
+# NaijaCart  Advanced Database Portfolio
 
 Coursework portfolio for Advanced Database Systems. The project uses a simulated Nigerian e-commerce marketplace called **NaijaCart** (similar to Jumia or Konga) to test relational schema design, indexing, transactions, NoSQL models, and distributed database setups.
 
