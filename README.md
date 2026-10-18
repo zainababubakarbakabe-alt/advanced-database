@@ -2,7 +2,7 @@
 
 Coursework portfolio for Advanced Database Systems. The project uses a simulated Nigerian e-commerce marketplace called **NaijaCart** (similar to Jumia or Konga) to test relational schema design, indexing, transactions, NoSQL models, and distributed database setups.
 
-## Folders
+## Folder
 
 * `portfolio-1-database-design`: 11-table BCNF schema, seed data, ER diagram, and user roles.
 * `portfolio-2-query-optimisation`: 7 queries tested with EXPLAIN ANALYZE before and after indexing, plus a materialized view test.
