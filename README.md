@@ -11,7 +11,7 @@ Coursework portfolio for Advanced Database Systems. The project uses a simulated
 * `portfolio-5-distributed-cloud`: Streaming replication, failover test, and hash sharding with `postgres_fdw`.
 * `docs`: The 3-page report (`final-documentation.pdf`), Word copy, and screenshots.
 
-## Quick Start
+## Quick Starts
 
 You will need PostgreSQL (14 or 16) and Redis running locally.
 
