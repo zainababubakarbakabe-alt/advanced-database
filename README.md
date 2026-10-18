@@ -31,6 +31,6 @@ Portfolio 5 involves stopping and promoting database nodes, so it is run separat
 * **Tested & executed:** Everything in Portfolios 1, 2, and 3; the PostgreSQL JSONB and Redis parts of Portfolio 4; and the replication and sharding demos in Portfolio 5. All terminal outputs and plans are saved in each folder's `results/` directory.
 * **Designs only:** The MongoDB script and Neo4j Cypher recommendation model in Portfolio 4, and the multi-region AWS setup in Portfolio 5 are architectural designs submitted for comparison.
 
-## Reports
+## Report
 
 The required LMS documentation is in [docs/final-documentation.pdf](docs/final-documentation.pdf) (Word version is in [docs/final-documentation.docx](docs/final-documentation.docx)).
